@@ -11,6 +11,8 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import ProfileAppointments from "./pages/ProfileAppointments";
 import ProfileOrders from "./pages/ProfileOrders";
+import Booking from "./pages/Booking";
+import BookingConfirmation from "./pages/BookingConfirmation";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminServices from "./pages/admin/AdminServices";
@@ -36,6 +38,8 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/appointments" element={<ProfileAppointments />} />
             <Route path="/profile/orders" element={<ProfileOrders />} />
+            <Route path="/booking" element={<Booking />} />
+            <Route path="/booking/confirmation" element={<BookingConfirmation />} />
             
             {/* Административная панель */}
             <Route path="/admin/login" element={<AdminLogin />} />
