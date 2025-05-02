@@ -11,6 +11,13 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import ProfileAppointments from "./pages/ProfileAppointments";
 import ProfileOrders from "./pages/ProfileOrders";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminServices from "./pages/admin/AdminServices";
+import AdminAppointments from "./pages/admin/AdminAppointments";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminProducts from "./pages/admin/AdminProducts";
+import AdminLayout from "./components/admin/AdminLayout";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +36,17 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/profile/appointments" element={<ProfileAppointments />} />
             <Route path="/profile/orders" element={<ProfileOrders />} />
+            
+            {/* Административная панель */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboard />} />
+              <Route path="services" element={<AdminServices />} />
+              <Route path="appointments" element={<AdminAppointments />} />
+              <Route path="users" element={<AdminUsers />} />
+              <Route path="products" element={<AdminProducts />} />
+            </Route>
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

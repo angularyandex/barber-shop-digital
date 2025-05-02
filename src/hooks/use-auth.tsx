@@ -7,12 +7,14 @@ interface User {
   email: string;
   phone?: string;
   avatar?: string;
+  role?: 'user' | 'admin';
 }
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  adminLogin: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
@@ -45,13 +47,43 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
         id: '1',
         name: 'Иван Иванов',
         email: email,
-        phone: '+7 (999) 123-45-67'
+        phone: '+7 (999) 123-45-67',
+        role: 'user'
       };
       
       setUser(mockUser);
       localStorage.setItem('salon_user', JSON.stringify(mockUser));
     } catch (error) {
       console.error('Login error:', error);
+      throw new Error('Ошибка при входе. Пожалуйста, проверьте ваши данные.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const adminLogin = async (email: string, password: string) => {
+    try {
+      setIsLoading(true);
+      // Имитация API-запроса
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // В реальном приложении здесь будет проверка роли администратора
+      // Для демо используем заглушку
+      if (email !== 'admin@example.com') {
+        throw new Error('Пользователь не найден или не имеет прав администратора');
+      }
+      
+      const adminUser: User = {
+        id: 'admin1',
+        name: 'Администратор',
+        email: email,
+        role: 'admin'
+      };
+      
+      setUser(adminUser);
+      localStorage.setItem('salon_user', JSON.stringify(adminUser));
+    } catch (error) {
+      console.error('Admin login error:', error);
       throw new Error('Ошибка при входе. Пожалуйста, проверьте ваши данные.');
     } finally {
       setIsLoading(false);
@@ -70,6 +102,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
         id: '1',
         name: name,
         email: email,
+        role: 'user'
       };
       
       setUser(mockUser);
@@ -114,6 +147,7 @@ export const AuthProvider: React.FC<React.PropsWithChildren> = ({ children }) =>
         user,
         isLoading,
         login,
+        adminLogin,
         register,
         logout,
         updateProfile
