@@ -1,162 +1,205 @@
 
 import React, { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
-} from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
-import { 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer, 
-  BarChart, 
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  BarChart,
   Bar,
   PieChart,
   Pie,
   Cell,
-  Legend
 } from 'recharts';
 
-// Пример данных для графиков и статистики
-const revenueData = [
-  { name: 'Янв', value: 45000 },
-  { name: 'Фев', value: 52000 },
-  { name: 'Мар', value: 48000 },
-  { name: 'Апр', value: 61000 },
-  { name: 'Май', value: 55000 },
-  { name: 'Июн', value: 67000 },
-  { name: 'Июл', value: 72000 },
-];
-
-const weeklyAppointmentsData = [
-  { name: 'Пн', value: 12 },
-  { name: 'Вт', value: 18 },
-  { name: 'Ср', value: 15 },
-  { name: 'Чт', value: 20 },
-  { name: 'Пт', value: 25 },
-  { name: 'Сб', value: 22 },
-  { name: 'Вс', value: 0 },
-];
-
-const monthlyAppointmentsData = [
-  { name: 'Неделя 1', value: 42 },
-  { name: 'Неделя 2', value: 38 },
-  { name: 'Неделя 3', value: 47 },
-  { name: 'Неделя 4', value: 53 },
-];
-
-const categoryData = [
-  { name: 'Стрижки', value: 35 },
-  { name: 'Окрашивание', value: 25 },
-  { name: 'Маникюр', value: 20 },
-  { name: 'Педикюр', value: 10 },
-  { name: 'Другое', value: 10 },
-];
-
-const COLORS = ['#9b87f5', '#7E69AB', '#6E59A5', '#D6BCFA', '#F2FCE2'];
-
-const topServices = [
-  { name: 'Стрижка женская', count: 156, revenue: 234000 },
-  { name: 'Окрашивание', count: 89, revenue: 356000 },
-  { name: 'Маникюр', count: 104, revenue: 114400 },
-  { name: 'Стрижка мужская', count: 78, revenue: 78000 },
-];
-
-const recentActivities = [
-  { id: 1, type: 'appointment', user: { name: 'Анна К.', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' }, action: 'записалась на стрижку', time: '2 часа назад' },
-  { id: 2, type: 'order', user: { name: 'Михаил С.', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' }, action: 'оформил заказ #12345', time: '3 часа назад' },
-  { id: 3, type: 'feedback', user: { name: 'Елена Д.', image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' }, action: 'оставила отзыв (5★)', time: '5 часов назад' },
-  { id: 4, type: 'appointment', user: { name: 'Виктор А.', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80' }, action: 'отменил запись', time: '1 день назад' },
-];
-
-const todayAppointments = [
-  { 
-    id: 1, 
-    client: 'Анна Иванова',
-    clientImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    service: 'Стрижка женская',
-    specialist: 'Екатерина',
-    time: '10:00',
-    status: 'completed'
-  },
-  { 
-    id: 2, 
-    client: 'Михаил Петров',
-    clientImage: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    service: 'Стрижка мужская',
-    specialist: 'Алексей',
-    time: '11:30',
-    status: 'ongoing'
-  },
-  { 
-    id: 3, 
-    client: 'Елена Сидорова',
-    clientImage: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    service: 'Окрашивание',
-    specialist: 'Екатерина',
-    time: '14:00',
-    status: 'upcoming'
-  },
-  { 
-    id: 4, 
-    client: 'Ольга Кузнецова',
-    clientImage: 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-    service: 'Маникюр',
-    specialist: 'Мария',
-    time: '16:30',
-    status: 'upcoming'
-  },
-];
-
-const lowStockItems = [
-  { id: 1, name: 'Масло для волос', stock: 3, category: 'Маски и масла' },
-  { id: 2, name: 'Шампунь для окрашенных волос', stock: 5, category: 'Шампуни' },
-  { id: 3, name: 'Гель-лак красный', stock: 2, category: 'Маникюр' },
-];
-
 const AdminDashboard: React.FC = () => {
-  const [dateRange, setDateRange] = useState<'week' | 'month' | 'year'>('month');
-  const [appointmentsView, setAppointmentsView] = useState<'day' | 'week'>('week');
+  const [period, setPeriod] = useState('week');
+  const [notificationsCount] = useState(5);
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(value);
-  };
-
-  const getActivityIcon = (type: string) => {
-    switch (type) {
-      case 'appointment':
-        return <Icon name="Calendar" className="text-blue-500" size={18} />;
-      case 'order':
-        return <Icon name="ShoppingBag" className="text-green-500" size={18} />;
-      case 'feedback':
-        return <Icon name="Star" className="text-yellow-500" size={18} />;
-      default:
-        return <Icon name="Activity" className="text-gray-500" size={18} />;
+  // Генерация данных для графиков в зависимости от выбранного периода
+  const generateChartData = (period: string) => {
+    if (period === 'week') {
+      return [
+        { day: 'Пн', appointments: 12, sales: 5800, revenue: 8400 },
+        { day: 'Вт', appointments: 19, sales: 4200, revenue: 12300 },
+        { day: 'Ср', appointments: 15, sales: 6100, revenue: 9800 },
+        { day: 'Чт', appointments: 11, sales: 3800, revenue: 7600 },
+        { day: 'Пт', appointments: 23, sales: 7900, revenue: 15200 },
+        { day: 'Сб', appointments:  28, sales: 9200, revenue: 18400 },
+        { day: 'Вс', appointments: 21, sales: 6500, revenue: 14300 },
+      ];
+    } else if (period === 'month') {
+      return [
+        { day: '1 нед', appointments: 65, sales: 24000, revenue: 48000 },
+        { day: '2 нед', appointments: 72, sales: 26500, revenue: 52000 },
+        { day: '3 нед', appointments: 58, sales: 21800, revenue: 43500 },
+        { day: '4 нед', appointments: 69, sales: 25200, revenue: 50100 },
+      ];
+    } else {
+      return [
+        { day: 'Янв', appointments: 210, sales: 87000, revenue: 187000 },
+        { day: 'Фев', appointments: 185, sales: 76000, revenue: 165000 },
+        { day: 'Мар', appointments: 222, sales: 92000, revenue: 195000 },
+        { day: 'Апр', appointments: 198, sales: 81000, revenue: 172000 },
+        { day: 'Май', appointments: 243, sales: 102000, revenue: 210000 },
+        { day: 'Июн', appointments: 264, sales: 112000, revenue: 226000 },
+        { day: 'Июл', appointments: 287, sales: 124000, revenue: 245000 },
+        { day: 'Авг', appointments: 258, sales: 105000, revenue: 218000 },
+        { day: 'Сен', appointments: 230, sales: 96000, revenue: 203000 },
+        { day: 'Окт', appointments: 245, sales: 103000, revenue: 215000 },
+        { day: 'Ноя', appointments: 213, sales: 91000, revenue: 190000 },
+        { day: 'Дек', appointments: 280, sales: 118000, revenue: 238000 },
+      ];
     }
   };
 
-  const getAppointmentStatusBadge = (status: string) => {
+  const chartData = generateChartData(period);
+
+  // Данные для графика услуг
+  const serviceData = [
+    { name: 'Стрижки', value: 35 },
+    { name: 'Окрашивание', value: 25 },
+    { name: 'Маникюр', value: 15 },
+    { name: 'Педикюр', value: 10 },
+    { name: 'Массаж', value: 8 },
+    { name: 'Другие', value: 7 },
+  ];
+
+  // Цвета для графика услуг
+  const COLORS = ['#8884d8', '#9b87f5', '#82ca9d', '#ffc658', '#ff8042', '#A0AEC0'];
+
+  // Данные о продажах по категориям
+  const categoryData = [
+    { name: 'Шампуни', sales: 22600 },
+    { name: 'Средства для укладки', sales: 18400 },
+    { name: 'Маски', sales: 15800 },
+    { name: 'Масла', sales: 12300 },
+    { name: 'Лаки', sales: 9500 },
+  ];
+
+  // Уведомления для дашборда
+  const notifications = [
+    {
+      id: 1,
+      title: 'Клиент отменил запись',
+      description: 'Анна Иванова отменила запись на 15:00',
+      time: '10 минут назад',
+      type: 'warning'
+    },
+    {
+      id: 2,
+      title: 'Заканчивается товар',
+      description: 'Шампунь для окрашенных волос (5 шт)',
+      time: '1 час назад',
+      type: 'warning'
+    },
+    {
+      id: 3,
+      title: 'Новая запись',
+      description: 'Михаил Петров записался на окрашивание в 14:00 завтра',
+      time: '2 часа назад',
+      type: 'success'
+    },
+    {
+      id: 4,
+      title: 'Новый заказ в магазине',
+      description: 'Заказ #1072 на сумму 3800₽',
+      time: '4 часа назад',
+      type: 'success'
+    },
+    {
+      id: 5,
+      title: 'Новое сообщение',
+      description: 'Елена Сидорова написала в чат',
+      time: '6 часов назад',
+      type: 'info'
+    },
+  ];
+
+  // Данные о ближайших записях
+  const upcomingAppointments = [
+    {
+      id: 1,
+      client: 'Анна Иванова',
+      clientAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=200&q=80',
+      service: 'Окрашивание волос',
+      time: '13:00',
+      specialist: 'Мария Соколова',
+    },
+    {
+      id: 2,
+      client: 'Петр Смирнов',
+      service: 'Мужская стрижка',
+      time: '14:30',
+      specialist: 'Алексей Петров',
+    },
+    {
+      id: 3,
+      client: 'Елена Козлова',
+      clientAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=200&q=80',
+      service: 'Маникюр',
+      time: '16:00',
+      specialist: 'Ольга Смирнова',
+    },
+  ];
+
+  // Данные о недавних заказах
+  const recentOrders = [
+    {
+      id: 1,
+      number: 'ORD-2025-0023',
+      client: 'Анна Иванова',
+      date: '03.05.2025',
+      total: 3540,
+      status: 'completed',
+    },
+    {
+      id: 2,
+      number: 'ORD-2025-0022',
+      client: 'Михаил Федоров',
+      date: '02.05.2025',
+      total: 1850,
+      status: 'processing',
+    },
+    {
+      id: 3,
+      number: 'ORD-2025-0021',
+      client: 'Елена Козлова',
+      date: '01.05.2025',
+      total: 4200,
+      status: 'completed',
+    },
+  ];
+
+  const getOrderStatusBadge = (status: string) => {
     switch (status) {
       case 'completed':
-        return <Badge className="bg-green-500">Выполнена</Badge>;
-      case 'ongoing':
-        return <Badge className="bg-blue-500">В процессе</Badge>;
-      case 'upcoming':
-        return <Badge className="bg-salon-accent">Предстоит</Badge>;
+        return <Badge className="bg-green-500">Выполнен</Badge>;
+      case 'processing':
+        return <Badge className="bg-blue-500">В обработке</Badge>;
       case 'cancelled':
-        return <Badge className="bg-red-500">Отменена</Badge>;
+        return <Badge className="bg-red-500">Отменен</Badge>;
       default:
         return null;
     }
@@ -164,342 +207,366 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Панель управления</h1>
-          <p className="text-muted-foreground">
-            Аналитика и ключевые метрики вашего салона
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Select value={dateRange} onValueChange={(value: 'week' | 'month' | 'year') => setDateRange(value)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Выберите период" />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+        <h1 className="text-2xl font-bold tracking-tight">Панель управления</h1>
+        <div className="flex items-center gap-2 mt-2 sm:mt-0">
+          <Select value={period} onValueChange={setPeriod}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Период" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="week">Последняя неделя</SelectItem>
-              <SelectItem value="month">Последний месяц</SelectItem>
-              <SelectItem value="year">Последний год</SelectItem>
+              <SelectItem value="week">Неделя</SelectItem>
+              <SelectItem value="month">Месяц</SelectItem>
+              <SelectItem value="year">Год</SelectItem>
             </SelectContent>
           </Select>
+          <Button variant="outline" className="gap-1">
+            <Icon name="Download" size={16} />
+            <span className="hidden sm:inline">Экспорт</span>
+          </Button>
         </div>
       </div>
 
-      {/* Основные метрики */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Общий доход</CardTitle>
-            <Icon name="DollarSign" className="h-4 w-4 text-muted-foreground" />
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Записи
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(400000)}</div>
-            <div className="flex items-center text-xs text-muted-foreground mt-1">
-              <Icon name="TrendingUp" className="mr-1 h-3 w-3 text-green-500" />
-              <span className="text-green-500 mr-1">+20.1%</span>
-              <span>к прошлому месяцу</span>
+            <div className="text-2xl font-bold">
+              {chartData.reduce((sum, item) => sum + item.appointments, 0)}
             </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Новых клиентов</CardTitle>
-            <Icon name="Users" className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">+48</div>
-            <div className="flex items-center text-xs text-muted-foreground mt-1">
-              <Icon name="TrendingUp" className="mr-1 h-3 w-3 text-green-500" />
-              <span className="text-green-500 mr-1">+12.2%</span>
-              <span>к прошлому месяцу</span>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Записей</CardTitle>
-            <Icon name="Calendar" className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">120</div>
-            <div className="flex items-center text-xs text-muted-foreground mt-1">
-              <Icon name="TrendingUp" className="mr-1 h-3 w-3 text-green-500" />
-              <span className="text-green-500 mr-1">+5.0%</span>
-              <span>к прошлому месяцу</span>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Продаж</CardTitle>
-            <Icon name="ShoppingCart" className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">43</div>
-            <div className="flex items-center text-xs text-muted-foreground mt-1">
-              <Icon name="TrendingUp" className="mr-1 h-3 w-3 text-green-500" />
-              <span className="text-green-500 mr-1">+10.5%</span>
-              <span>к прошлому месяцу</span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Основной дашборд */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Левая колонка */}
-        <div className="col-span-2 space-y-6">
-          {/* График доходов */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle>Доход за период</CardTitle>
-              <CardDescription>
-                Динамика дохода салона
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="h-80">
+            <p className="text-xs text-muted-foreground mt-1">
+              <span className="text-green-500 font-medium">+12%</span> по сравнению с предыдущим периодом
+            </p>
+            <div className="mt-4 h-10">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={revenueData}
-                  margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="name" />
-                  <YAxis tickFormatter={(value) => `${value / 1000}K`} />
-                  <Tooltip 
-                    formatter={(value: number) => [formatCurrency(value), 'Доход']}
-                    labelFormatter={(label) => `Период: ${label}`}
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="appointmentsGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#9b87f5" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#9b87f5" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <Area 
+                    type="monotone" 
+                    dataKey="appointments" 
+                    stroke="#9b87f5" 
+                    fillOpacity={1} 
+                    fill="url(#appointmentsGradient)" 
                   />
-                  <Line
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#9b87f5"
-                    strokeWidth={2}
-                    activeDot={{ r: 8 }}
-                  />
-                </LineChart>
+                </AreaChart>
               </ResponsiveContainer>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Продажи
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {chartData.reduce((sum, item) => sum + item.sales, 0).toLocaleString()} ₽
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              <span className="text-green-500 font-medium">+8%</span> по сравнению с предыдущим периодом
+            </p>
+            <div className="mt-4 h-10">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#4ade80" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#4ade80" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <Area 
+                    type="monotone" 
+                    dataKey="sales" 
+                    stroke="#4ade80" 
+                    fillOpacity={1} 
+                    fill="url(#salesGradient)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Выручка
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {chartData.reduce((sum, item) => sum + item.revenue, 0).toLocaleString()} ₽
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              <span className="text-green-500 font-medium">+14%</span> по сравнению с предыдущим периодом
+            </p>
+            <div className="mt-4 h-10">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
+                  <defs>
+                    <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <Area 
+                    type="monotone" 
+                    dataKey="revenue" 
+                    stroke="#3b82f6" 
+                    fillOpacity={1} 
+                    fill="url(#revenueGradient)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Уведомления
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold flex items-center">
+              {notificationsCount}
+              <Badge className="ml-2 bg-red-500">{notificationsCount} новых</Badge>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Требуют внимания администратора
+            </p>
+            <div className="mt-4">
+              <Button variant="outline" className="w-full" asChild>
+                <a href="/admin/chat">
+                  <Icon name="Bell" className="mr-2 h-4 w-4" />
+                  Просмотреть все
+                </a>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-          {/* Записи и распределение услуг */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* График записей */}
-            <Card>
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle>Записи</CardTitle>
-                  <div className="flex">
-                    <Button 
-                      variant={appointmentsView === 'day' ? 'default' : 'ghost'} 
-                      size="sm"
-                      onClick={() => setAppointmentsView('day')}
-                      className={appointmentsView === 'day' ? 'bg-salon-accent hover:bg-salon-accent/90' : ''}
-                    >
-                      День
-                    </Button>
-                    <Button 
-                      variant={appointmentsView === 'week' ? 'default' : 'ghost'} 
-                      size="sm"
-                      onClick={() => setAppointmentsView('week')}
-                      className={appointmentsView === 'week' ? 'bg-salon-accent hover:bg-salon-accent/90' : ''}
-                    >
-                      Неделя
-                    </Button>
-                  </div>
-                </div>
-                <CardDescription>
-                  {appointmentsView === 'day' ? 'Записи по дням недели' : 'Записи по неделям'}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="h-[230px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={appointmentsView === 'day' ? weeklyAppointmentsData : monthlyAppointmentsData}
-                    margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle>Анализ продаж и записей</CardTitle>
+            <CardDescription>
+              Динамика показателей за выбранный период
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="day" />
+                  <YAxis yAxisId="left" orientation="left" />
+                  <YAxis
+                    yAxisId="right"
+                    orientation="right"
+                    tickFormatter={(value) => `${value / 1000}k`}
+                  />
+                  <Tooltip formatter={(value, name) => {
+                    if (name === 'appointments') return [value, 'Записи'];
+                    if (name === 'sales') return [`${value} ₽`, 'Продажи'];
+                    return [value, name];
+                  }} />
+                  <Bar
+                    yAxisId="left"
+                    dataKey="appointments"
+                    fill="#9b87f5"
+                    name="Записи"
+                  />
+                  <Bar
+                    yAxisId="right"
+                    dataKey="sales"
+                    fill="#4ade80"
+                    name="Продажи"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Популярные услуги</CardTitle>
+            <CardDescription>
+              Распределение по категориям услуг
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={serviceData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={2}
+                    dataKey="value"
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    labelLine={false}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip
-                      formatter={(value: number) => [`${value} записей`, 'Количество']}
-                      labelFormatter={(label) => `${label}`}
-                    />
-                    <Bar dataKey="value" fill="#9b87f5" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+                    {serviceData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => [`${value}%`, 'Доля']} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-            {/* Распределение услуг */}
-            <Card>
-              <CardHeader className="pb-2">
-                <CardTitle>Распределение услуг</CardTitle>
-                <CardDescription>
-                  Соотношение категорий услуг
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="h-[230px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={categoryData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {categoryData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      formatter={(value: number) => [`${value}%`, 'Доля']}
-                    />
-                    <Legend layout="horizontal" verticalAlign="bottom" align="center" />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Продажи по категориям</CardTitle>
+            <CardDescription>
+              Топ категорий товаров по продажам
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={categoryData}
+                  layout="vertical"
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis type="number" />
+                  <YAxis dataKey="name" type="category" width={150} />
+                  <Tooltip formatter={(value) => [`${value.toLocaleString()} ₽`, 'Продажи']} />
+                  <Bar dataKey="sales" fill="#9b87f5" radius={[0, 4, 4, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Записи на сегодня */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Записи на сегодня</CardTitle>
-              <CardDescription>
-                Список записей на текущий день
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {todayAppointments.length === 0 ? (
-                <div className="text-center py-6 text-muted-foreground">
-                  На сегодня нет записей
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {todayAppointments.map((appointment) => (
-                    <div key={appointment.id} className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
-                      <div className="flex items-center gap-3">
-                        <Avatar>
-                          <AvatarImage src={appointment.clientImage} alt={appointment.client} />
-                          <AvatarFallback>{appointment.client[0]}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{appointment.client}</div>
-                          <div className="text-sm text-muted-foreground">{appointment.service}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="text-right">
-                          <div className="text-sm font-medium">{appointment.time}</div>
-                          <div className="text-xs text-muted-foreground">{appointment.specialist}</div>
-                        </div>
-                        {getAppointmentStatusBadge(appointment.status)}
-                      </div>
-                    </div>
-                  ))}
-                  <Button variant="outline" size="sm" className="w-full mt-2">
-                    Все записи
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Правая колонка */}
         <div className="space-y-6">
-          {/* Популярные услуги */}
           <Card>
-            <CardHeader>
-              <CardTitle>Популярные услуги</CardTitle>
-              <CardDescription>Топ услуг по количеству записей</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {topServices.map((service, i) => (
-                  <div key={i} className="flex items-center justify-between border-b last:border-none pb-3 last:pb-0">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-full bg-salon-accent/10 flex items-center justify-center text-salon-accent font-medium text-sm">
-                        {i + 1}
-                      </div>
-                      <div>
-                        <div className="font-medium">{service.name}</div>
-                        <div className="text-sm text-muted-foreground">{service.count} записей</div>
-                      </div>
-                    </div>
-                    <div className="font-medium text-right">{formatCurrency(service.revenue)}</div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Последние активности */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Последние активности</CardTitle>
-              <CardDescription>Недавние действия клиентов</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recentActivities.map((activity) => (
-                  <div key={activity.id} className="flex items-start gap-3 border-b last:border-none pb-3 last:pb-0">
-                    <div className="relative">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={activity.user.image} alt={activity.user.name} />
-                        <AvatarFallback>{activity.user.name[0]}</AvatarFallback>
-                      </Avatar>
-                      <div className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-white">
-                        {getActivityIcon(activity.type)}
-                      </div>
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-medium">
-                        <span className="text-salon-accent">{activity.user.name}</span> {activity.action}
-                      </div>
-                      <div className="text-sm text-muted-foreground">{activity.time}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Товары с низким остатком */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Низкий остаток товаров</CardTitle>
-              <CardDescription>Товары, требующие пополнения</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {lowStockItems.length === 0 ? (
-                <div className="text-center py-6 text-muted-foreground">
-                  Нет товаров с низким остатком
+            <Tabs defaultValue="notifications">
+              <CardHeader className="pb-0">
+                <div className="flex items-center justify-between">
+                  <CardTitle>Активность</CardTitle>
+                  <TabsList>
+                    <TabsTrigger value="notifications">Уведомления</TabsTrigger>
+                    <TabsTrigger value="appointments">Записи</TabsTrigger>
+                    <TabsTrigger value="orders">Заказы</TabsTrigger>
+                  </TabsList>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  {lowStockItems.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between">
-                      <div>
-                        <div className="font-medium">{item.name}</div>
-                        <div className="text-sm text-muted-foreground">{item.category}</div>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <TabsContent value="notifications" className="m-0">
+                  <div className="space-y-4">
+                    {notifications.map(notification => (
+                      <div key={notification.id} className="flex items-start gap-4">
+                        <div className={`rounded-full p-2 ${
+                          notification.type === 'success' ? 'bg-green-100 text-green-600' :
+                          notification.type === 'warning' ? 'bg-orange-100 text-orange-600' :
+                          'bg-blue-100 text-blue-600'
+                        }`}>
+                          <Icon 
+                            name={
+                              notification.type === 'success' ? 'CheckCircle' :
+                              notification.type === 'warning' ? 'AlertTriangle' :
+                              'Info'
+                            } 
+                            size={16} 
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex justify-between">
+                            <h3 className="font-medium">{notification.title}</h3>
+                            <span className="text-xs text-gray-500">{notification.time}</span>
+                          </div>
+                          <p className="text-sm text-gray-600 mt-1">{notification.description}</p>
+                        </div>
                       </div>
-                      <Badge variant="outline" className="text-red-500 border-red-200 bg-red-50">
-                        Остаток: {item.stock}
-                      </Badge>
-                    </div>
-                  ))}
-                  <Button variant="outline" size="sm" className="w-full mt-2">
-                    Управление товарами
-                  </Button>
-                </div>
-              )}
-            </CardContent>
+                    ))}
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="appointments" className="m-0">
+                  <div className="space-y-4">
+                    {upcomingAppointments.map(appointment => (
+                      <div key={appointment.id} className="flex items-center gap-4 p-3 rounded-lg border hover:bg-gray-50">
+                        <div className="flex-shrink-0">
+                          <div className="w-10 h-10 rounded-full bg-salon-accent/10 flex items-center justify-center">
+                            {appointment.clientAvatar ? (
+                              <img 
+                                src={appointment.clientAvatar} 
+                                alt={appointment.client} 
+                                className="w-10 h-10 rounded-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-salon-accent font-medium">
+                                {appointment.client.charAt(0)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{appointment.client}</p>
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <span>{appointment.service}</span>
+                            <span>•</span>
+                            <span>{appointment.specialist}</span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className="font-medium text-lg">{appointment.time}</span>
+                          <div className="text-xs text-gray-500">Сегодня</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </TabsContent>
+                
+                <TabsContent value="orders" className="m-0">
+                  <div className="space-y-4">
+                    {recentOrders.map(order => (
+                      <div key={order.id} className="flex items-center justify-between p-3 rounded-lg border hover:bg-gray-50">
+                        <div>
+                          <p className="font-medium">{order.number}</p>
+                          <div className="text-sm text-gray-500 mt-1">
+                            <span>{order.client}</span>
+                            <span className="mx-1">•</span>
+                            <span>{order.date}</span>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium">{order.total.toLocaleString()} ₽</p>
+                          <div className="mt-1">
+                            {getOrderStatusBadge(order.status)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </TabsContent>
+              </CardContent>
+            </Tabs>
           </Card>
         </div>
       </div>
