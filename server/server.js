@@ -8,11 +8,15 @@ import dotenv from 'dotenv';
 // Импорт модулей
 import connectDB from './config/database.js';
 import errorHandler from './middleware/errorHandler.js';
+import { analyticsMiddleware } from './middleware/analytics.js';
+import { startScheduler } from './utils/scheduler.js';
 
 // Импорт маршрутов
 import authRoutes from './routes/auth.js';
 import serviceRoutes from './routes/services.js';
 import appointmentRoutes from './routes/appointments.js';
+import productRoutes from './routes/products.js';
+import promotionRoutes from './routes/promotions.js';
 import adminRoutes from './routes/admin.js';
 
 // Загрузка переменных окружения
@@ -20,6 +24,11 @@ dotenv.config();
 
 // Подключение к базе данных
 connectDB();
+
+// Запуск планировщика задач
+if (process.env.NODE_ENV === 'production') {
+  startScheduler();
+}
 
 const app = express();
 
@@ -49,6 +58,9 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+// Аналитика API
+app.use(analyticsMiddleware);
+
 // Парсинг JSON
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -57,6 +69,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', authRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/appointments', appointmentRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/promotions', promotionRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Базовый маршрут
@@ -69,8 +83,20 @@ app.get('/api', (req, res) => {
       auth: '/api/auth',
       services: '/api/services',
       appointments: '/api/appointments',
+      products: '/api/products',
+      promotions: '/api/promotions',
       admin: '/api/admin'
     }
+  });
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
   });
 });
 
@@ -96,6 +122,15 @@ process.on('unhandledRejection', (err, promise) => {
   console.log(`Ошибка: ${err.message}`);
   server.close(() => {
     process.exit(1);
+  });
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM получен, завершение работы сервера...');
+  server.close(() => {
+    console.log('Сервер остановлен');
+    process.exit(0);
   });
 });
 
